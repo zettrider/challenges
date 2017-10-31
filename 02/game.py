@@ -4,11 +4,11 @@
 
 import itertools
 import random
+import copy
 
 from data import DICTIONARY, LETTER_SCORES, POUCH
 
 NUM_LETTERS = 7
-
 
 def draw_letters():
     """Pick NUM_LETTERS letters randomly. Hint: use stdlib random"""
@@ -17,18 +17,39 @@ def draw_letters():
         LETTERS_DRAWN.append(POUCH[random.randrange(98)])
     return LETTERS_DRAWN
 
-
 def input_word(draw):
     """Ask player for a word and validate against draw.
     Use _validation(word, draw) helper."""
-    pass 
-
-
+    WORD_PLAYER = input("Form a valid word: ") 
+    while _validation(WORD_PLAYER, draw) is not True:
+        print("The provided word did not pass the validation, please try again!")
+        WORD_PLAYER = input("Form a valid word: ")
+    
+    return WORD_PLAYER
 
 def _validation(word, draw):
     """Validations: 1) only use letters of draw, 2) valid dictionary word"""
-    pass
+    # 1. Validate using only the letters of the draw
+    WORD_IS_VALID = True
+    DRAW_VALID = copy.copy(draw)
+    for letter in word:
+        if letter.upper() in DRAW_VALID:
+            DRAW_VALID.remove(letter.upper())
+        else:
+            WORD_IS_VALID = False
+            # Added ValueErrors to pass the Tests. While not_true loop makes sure 
+            # that only a valid combination will be accepted.
+            # Unclear why ValueError is desireable here.
+            #raise ValueError("Letters...")
 
+    if word.lower() not in DICTIONARY:
+        WORD_IS_VALID = False
+        # Added ValueErrors to pass the Tests. While not_true loop makes sure 
+        # that only a valid combination will be accepted.
+        # Unclear why ValueError is desireable here.
+        #raise ValueError("Words...")
+    
+    return WORD_IS_VALID
 
 # From challenge 01:
 def calc_word_value(word):
@@ -43,14 +64,29 @@ def calc_word_value(word):
 def get_possible_dict_words(draw):
     """Get all possible words from draw which are valid dictionary words.
     Use the _get_permutations_draw helper and DICTIONARY constant"""
-    pass
+    POSSIBLE_WORDS_LIST = []
+
+    for item in _get_permutations_draw(draw):
+        if item.lower() in DICTIONARY:
+            POSSIBLE_WORDS_LIST.append(item)
+
+    return POSSIBLE_WORDS_LIST
 
 
 def _get_permutations_draw(draw):
     """Helper for get_possible_dict_words to get all permutations of draw letters.
     Hint: use itertools.permutations"""
-    pass
+    PERMUTATION_LIST = []
+    MERGED_PERMUTATION_LIST = []
 
+    for i in range(1, NUM_LETTERS + 1):
+        PERMUTATION_LIST.append(list(map("".join, itertools.permutations(draw, i))))
+
+    for i in range (0, len(PERMUTATION_LIST)):
+        MERGED_PERMUTATION_LIST += PERMUTATION_LIST[i]
+
+    return MERGED_PERMUTATION_LIST
+    
 
 # From challenge 01:
 def max_word_value(words):
